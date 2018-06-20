@@ -23,10 +23,10 @@ module StatusPage
           ret = ret && val.filter(obj)
         else
 
-          if obj.include?(key)
-            v = obj[key]
-          elsif obj.include?(key.to_sym)
+          if obj.include?(key.to_sym)
             v = obj[key.to_sym]
+          elsif obj.include?(key.to_s)
+            v = obj[key.to_s]
           else
             ret = false
             next
@@ -53,10 +53,10 @@ module StatusPage
           ret = ret || r
         else
 
-          if obj.include?(key)
-            v = obj[key]
-          elsif obj.include?(key.to_sym)
+          if obj.include?(key.to_sym)
             v = obj[key.to_sym]
+          elsif obj.include?(key.to_s)
+            v = obj[key.to_s]
           else
             next
           end
