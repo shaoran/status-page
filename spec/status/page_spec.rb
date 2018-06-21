@@ -50,3 +50,46 @@ RSpec.describe StatusPage::Query do
     expect(q23.filter(obj)).to be true
   end
 end
+
+RSpec.describe StatusPage::ActiveRecord do
+  base = File.join("/", "tmp", "status-page", "db")
+  fn = File.join(base, "TestRecord.json")
+
+  system("rm -rf #{fn}")
+
+  class TestRecord < StatusPage::ActiveRecord
+  end
+
+  TestRecord.db_base = base
+  TestRecord.reload_cache()
+
+  it "creates a new storage file #{fn}" do
+    expect(Pathname.new(fn)).to exist
+  end
+
+  it "find() method returns empty array" do
+    expect(TestRecord.all).to be_empty
+  end
+
+  it "Saves a record successfully" do
+    nr = TestRecord.new a: 1, b:2, c:3
+    nr.save!
+
+    # clearing cache
+    TestRecord.wholedata.clear()
+
+    # restoring cache
+    TestRecord.reload_cache()
+
+    all = TestRecord.all
+
+    expect(all).not_to be_empty
+
+    expect(all[0].is_a?(TestRecord)).to be_truthy
+
+    expect(all[0].b).to be 2
+
+  end
+
+end
+
