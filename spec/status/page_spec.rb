@@ -151,3 +151,61 @@ RSpec.describe "Parser" do
 
 end
 
+RSpec.describe StatusPage::Pageinfo do
+  base = File.join("/", "tmp", "status-page")
+  fn = File.join(base, "pageinfo.yaml")
+
+  system("rm -rf #{fn}")
+
+  StatusPage::Pageinfo.pi_config = fn
+  StatusPage::Pageinfo.setup
+
+  it "creates a new page configuration file #{fn}" do
+    expect(Pathname.new(fn)).to exist
+  end
+
+  it "loads the configuration file" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    expect(cnf).not_to be nil
+  end
+
+  it "has a non-empty list of pages" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    expect(cnf.list).not_to be_empty
+  end
+
+  it "has Bitbucket" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    bb = cnf["Bitbucket"]
+
+    expect(bb).not_to be nil
+  end
+
+  it "has bitbucket" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    bb = cnf["bitbucket"]
+
+    expect(bb).not_to be nil
+  end
+
+  it "Bitbucket has the correct url" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    bb = cnf["Bitbucket"]
+
+    expect(bb["url"]).to eq("https://bqlf8qjztdtr.statuspage.io/api/v2/status.json")
+  end
+
+  it "bitbucket has the correct url" do
+    cnf = StatusPage::Pageinfo.load_config
+
+    bb = cnf["bitbucket"]
+
+    expect(bb["url"]).to eq("https://bqlf8qjztdtr.statuspage.io/api/v2/status.json")
+  end
+
+end
