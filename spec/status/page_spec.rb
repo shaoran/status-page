@@ -5,8 +5,15 @@ RSpec.describe StatusPage do
 end
 
 RSpec.describe StatusPage::JSONFetch do
-  it "fetches a json response" do
+  it "fetches a json statuspage_response" do
     json = StatusPage::JSONFetch.fetch("https://pclby00q90vc.statuspage.io/api/v2/status.json")
+
+    expect(json).not_to be nil
+    expect(json.is_a?(Hash)).to be true
+  end
+
+  it "fetches a json github_response" do
+    json = StatusPage::JSONFetch.fetch("https://status.github.com/api/status.json")
 
     expect(json).not_to be nil
     expect(json.is_a?(Hash)).to be true
@@ -89,6 +96,57 @@ RSpec.describe StatusPage::ActiveRecord do
 
     expect(all[0].b).to be 2
 
+  end
+
+end
+
+
+
+RSpec.describe "Parser" do
+
+    statuspage_response = {"page"=>{"id"=>"pclby00q90vc", "name"=>"RubyGems.org", "url"=>"https://status.rubygems.org", "time_zone"=>"Etc/UTC", "updated_at"=>"2018-06-17T22:55:20.374Z"}, "status"=>{"indicator"=>"none", "description"=>"All Systems Operational"}}
+
+    github_response = {"status"=>"good", "last_updated"=>"2018-06-11T16:50:02Z"}
+
+  it "parses the JSON statuspage_response of the status page" do
+    info = StatusPage::StatusPageParser.parse(statuspage_response)
+
+    expect(info).not_to be nil
+  end
+
+  expected = {:page_id=>"pclby00q90vc", :page_name=>"RubyGems.org", :timestamp=>1529276120, "status"=>"good"}
+
+  expected.each do |key,val|
+    info = StatusPage::StatusPageParser.parse(statuspage_response)
+
+    it "expects to find #{key.inspect}" do
+      expect(info.include?(key)).to be_truthy
+    end
+
+    it "expects to find #{key.inspect} with value #{val.inspect}" do
+      expect(info[key]).to eq(val)
+    end
+  end
+
+
+  it "parses the JSON github_response of the status page" do
+    info = StatusPage::GitHubParser::parse(github_response)
+    expect(info).not_to be nil
+  end
+
+  expected = {:page_id=>"github", :page_name=>"github.com", :timestamp=>1528735802, "status"=>"good"}
+
+
+  expected.each do |key,val|
+    info = StatusPage::GitHubParser::parse(github_response)
+
+    it "expects to find #{key.inspect}" do
+      expect(info.include?(key)).to be_truthy
+    end
+
+    it "expects to find #{key.inspect} with value #{val.inspect}" do
+      expect(info[key]).to eq(val)
+    end
   end
 
 end
