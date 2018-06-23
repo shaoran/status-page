@@ -181,27 +181,26 @@ RSpec.describe StatusPage::Pageinfo do
 
   system("rm -rf #{fn}")
 
-  StatusPage::Pageinfo.pi_config = fn
-  StatusPage::Pageinfo.setup
+  StatusPage::Pageinfo.setup(fn)
 
   it "creates a new page configuration file #{fn}" do
     expect(Pathname.new(fn)).to exist
   end
 
   it "loads the configuration file" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     expect(cnf).not_to be nil
   end
 
   it "has a non-empty list of pages" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     expect(cnf.list).not_to be_empty
   end
 
   it "has Bitbucket" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     bb = cnf["Bitbucket"]
 
@@ -209,7 +208,7 @@ RSpec.describe StatusPage::Pageinfo do
   end
 
   it "has bitbucket" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     bb = cnf["bitbucket"]
 
@@ -217,7 +216,7 @@ RSpec.describe StatusPage::Pageinfo do
   end
 
   it "Bitbucket has the correct url" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     bb = cnf["Bitbucket"]
 
@@ -225,7 +224,7 @@ RSpec.describe StatusPage::Pageinfo do
   end
 
   it "bitbucket has the correct url" do
-    cnf = StatusPage::Pageinfo.load_config
+    cnf = StatusPage::Pageinfo.load_config(fn)
 
     bb = cnf["bitbucket"]
 

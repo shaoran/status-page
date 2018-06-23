@@ -5,17 +5,9 @@ module StatusPage
 
   class Pageinfo
 
-    @@pi_config = File.join(Dir.home, ".config", "pageinfo.yaml")
+    @@pi_config = File.join(Dir.home, ".config", "status-page", "pageinfo.yaml")
 
-    def self.pi_config=(path)
-      @@pi_config = path
-    end
-
-    def self.pi_config
-      @@pi_config
-    end
-
-    def self.setup
+    def self.setup(fn=nil)
       default = {
         "pages" => {
           "Bitbucket" => {
@@ -40,19 +32,23 @@ module StatusPage
         }
       }
 
-      return if File.exists?(@@pi_config)
+      fn = @@pi_config if fn.nil?
 
-      dir = File.dirname(@@pi_config)
+      return if File.exists?(fn)
+
+      dir = File.dirname(fn)
 
       FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
 
-      File.open(@@pi_config, "w") do |fp|
+      File.open(fn, "w") do |fp|
         fp.write(YAML.dump(default))
       end
     end
 
-    def self.load_config
-      cnf = File.read(@@pi_config)
+    def self.load_config(fn=nil)
+      fn = @@pi_config if fn.nil?
+
+      cnf = File.read(fn)
 
       pi = YAML.load(cnf)
 
