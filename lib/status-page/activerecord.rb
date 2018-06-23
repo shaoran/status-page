@@ -7,6 +7,9 @@ module StatusPage
   class SavingDeleted < Exception
   end
 
+  class InvalidArchive < Exception
+  end
+
   class ActiveRecord
 
     class << self; attr_accessor :wholedata end
@@ -43,8 +46,8 @@ module StatusPage
       File.join(@@db_base, "#{klass}.json")
     end
 
-    def self.save(obj)
-      fn = self.get_store_fn
+    def self.save(obj, fn=nil)
+      fn = self.get_store_fn if fn.nil?
       cnt = obj.to_json
       begin
         File.open(fn, "w") { |f| f.write(cnt) }
@@ -53,6 +56,27 @@ module StatusPage
       end
 
       true
+    end
+
+    def self.backup(path)
+      self.save(@wholedata, path)
+    end
+
+    def self.restore(path)
+      raise InvalidArchive, "`#{path}' is an invalid archive" unless File.exists?(path)
+
+      begin
+        cnt = File.read(path)
+
+        data = JSON.load(cnt)
+      rescue
+        data = nil
+      end
+
+      raise InvalidArchive, "`#{path}' is an invalid archive" unless data.is_a?(Array)
+
+      FileUtils.cp path, self.get_store_fn
+      self.reload_cache
     end
 
     def self.all

@@ -62,7 +62,9 @@ RSpec.describe StatusPage::ActiveRecord do
   base = File.join("/", "tmp", "status-page", "db")
   fn = File.join(base, "TestRecord.json")
 
-  system("rm -rf #{fn}")
+  backup_fn = File.join("/", "tmp", "backup.json")
+
+  system("rm -rf #{fn} backup_fn")
 
   class TestRecord < StatusPage::ActiveRecord
   end
@@ -96,6 +98,28 @@ RSpec.describe StatusPage::ActiveRecord do
 
     expect(all[0].b).to be 2
 
+  end
+
+  it "Creates a backup to #{backup_fn}" do
+    res = TestRecord.backup(backup_fn)
+
+    expect(res).to be_truthy
+    expect(File.exists?(backup_fn)).to be_truthy
+  end
+
+  it "restores the backup from #{backup_fn}" do
+    # write some more object
+    TestRecord.new(a:1).save!
+    TestRecord.new(b:1).save!
+    TestRecord.new(c:1).save!
+
+    expect(TestRecord.all.size).not_to be 1
+
+    expect {TestRecord.restore("/etc/fstab")}.to raise_error(StatusPage::InvalidArchive)
+
+    TestRecord.restore(backup_fn)
+
+    expect(TestRecord.all.length).to be 1
   end
 
 end
