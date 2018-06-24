@@ -24,25 +24,16 @@ module StatusPage
 
       return nil if status.nil?
 
-      desc = status["description"]
+      indicator = status["indicator"]
+
+      indicator = "up" if indicator == "none"
 
       ret = {
         page_id:   page_id,
         page_name: page_name,
         timestamp: updated.to_i,
+        status: indicator
       }
-
-      if desc == "All Systems Operational"
-        s = "good"
-      elsif desc == "Partial System Outage"
-        s = "bad"
-      elsif desc == "Major Service Outage"
-        s = "down"
-      else
-        s = "unkown"
-      end
-
-      ret["status"] = s
 
       ret
     end

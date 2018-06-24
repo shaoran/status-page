@@ -130,7 +130,7 @@ RSpec.describe "Parser" do
 
     statuspage_response = {"page"=>{"id"=>"pclby00q90vc", "name"=>"RubyGems.org", "url"=>"https://status.rubygems.org", "time_zone"=>"Etc/UTC", "updated_at"=>"2018-06-17T22:55:20.374Z"}, "status"=>{"indicator"=>"none", "description"=>"All Systems Operational"}}
 
-    github_response = {"status"=>"good", "last_updated"=>"2018-06-11T16:50:02Z"}
+    github_response = {"status"=>"up", "last_updated"=>"2018-06-11T16:50:02Z"}
 
   it "parses the JSON statuspage_response of the status page" do
     info = StatusPage::StatusPageParser.parse(statuspage_response)
@@ -138,7 +138,7 @@ RSpec.describe "Parser" do
     expect(info).not_to be nil
   end
 
-  expected = {:page_id=>"pclby00q90vc", :page_name=>"RubyGems.org", :timestamp=>1529276120, "status"=>"good"}
+  expected = {:page_id=>"pclby00q90vc", :page_name=>"RubyGems.org", :timestamp=>1529276120, :status=>"up"}
 
   expected.each do |key,val|
     info = StatusPage::StatusPageParser.parse(statuspage_response)
@@ -158,7 +158,7 @@ RSpec.describe "Parser" do
     expect(info).not_to be nil
   end
 
-  expected = {:page_id=>"github", :page_name=>"github.com", :timestamp=>1528735802, "status"=>"good"}
+  expected = {:page_id=>"github", :page_name=>"github.com", :timestamp=>1528735802, :status=>"up"}
 
 
   expected.each do |key,val|

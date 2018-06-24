@@ -20,23 +20,14 @@ module StatusPage
         return nil
       end
 
+      status = "up" if status == "good"
+
       ret = {
         page_id:   "github",
         page_name: "github.com",
         timestamp: updated.to_i,
+        status: status,
       }
-
-      if status == "good"
-        s = "good"
-      elsif status == "minor"
-        s = "bad"
-      elsif status == "major"
-        s = "down"
-      else
-        s = "unkown"
-      end
-
-      ret["status"] = s
 
       ret
     end
