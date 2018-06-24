@@ -1,6 +1,7 @@
 *.swp
 .ruby-gemset
 .ruby-version
+.byebug_history
 
 /.bundle/
 /.yardoc
