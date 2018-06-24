@@ -1,0 +1,133 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "bundler/setup"
+require "status-page"
+
+require "thor"
+
+ENV["THOR_DEBUG"] = "1"
+
+class StatusPageCli < Thor
+  package_name "status-page"
+
+  class_option(:config, desc: "Base directory of the configuration.",
+       aliases: "-c", required: false, default: File.join(Dir.home, ".config", "status-page"))
+
+  desc "list", "List all services"
+  def list
+    app = get_app
+
+    puts app.list_services
+  end
+
+  desc "pull", "Fetches the latest stats for all services"
+  method_option :nosave, default: false, desc: "Do not save the stats, just print them", type: :boolean, aliases: "-n"
+  def pull
+    nosave = options["nosave"]
+
+    app = get_app
+
+    cmd = "pull_and_store"
+    cmd = "pull" if nosave
+
+    app.history(app.send(cmd))
+  end
+
+  desc "history", "Print all stored stats"
+  def history
+    app = get_app
+    app.history()
+  end
+
+  desc "backup [FILE]", "Creates a backup of the stats"
+  def backup(file)
+    app = get_app
+    res = app.backup(file)
+
+    if res
+      puts "Backup successfully saved in `#{file}'"
+      return 0
+    else
+      puts "Backup failed"
+      return 1
+    end
+  end
+
+  desc "restore [FILE]", "Restores the status from a backup"
+  def restore(file)
+    app = get_app
+    res = app.restore(file)
+
+    if res
+      puts "Backup successfully restored from `#{file}'"
+      return 0
+    else
+      puts "Backup restoration failed"
+      return 1
+    end
+  end
+
+  desc "live", "Live modus, pull every n seconds and prints the results"
+  method_option :nosave, default: false, desc: "Do not save the stats, just print them", type: :boolean, aliases: "-n"
+  method_option :period, default: 10, desc: "The period (in seconds) for the pull sequences", type: :numeric, aliases: "-p"
+  def live
+    nosave = options["nosave"]
+    period = options["period"]
+
+    cache = []
+
+    cmd = "pull_and_store"
+    cmd = "pull" if nosave
+
+    puts "Going into live mode. Press ctrl+C or send a SIGINT signal to stop"
+
+    app = get_app
+
+    begin
+      while true
+        app.history(app.send(cmd))
+        puts ""
+        puts ""
+        STDOUT.flush
+        sleep period
+      end
+    rescue SystemExit, Interrupt
+      return 0
+    rescue Exception => e
+      STDERR.puts "Unexpected error: #{e.to_s}"
+      return 1
+    end
+
+  end
+
+  desc "stats", "Print a summary of all stats"
+  def stats
+    app = get_app
+    app.stats
+  end
+
+  no_tasks do
+    def get_app
+      StatusPage::App.new(options["config"])
+    end
+  end
+
+
+end
+
+begin
+  c = StatusPageCli.start(ARGV)
+rescue Thor::UndefinedCommandError => e
+  STDERR.puts e
+  StatusPageCli.start(["help"])
+  exit 1
+rescue Thor::InvocationError => e
+  STDERR.puts e
+  StatusPageCli.start(["help", ARGV[0]])
+  exit 1
+end
+
+exit 0 if c.is_a?(Hash) && c.empty?
+exit c if c.is_a?(Numeric)
+exit 0  # default exit status
