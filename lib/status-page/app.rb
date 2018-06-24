@@ -197,8 +197,10 @@ module StatusPage
     protected
     def setup_model(config_base)
       bs = nil
-      bs = File.join(config_base, "db") unless config_base.nil?
-      Pages.db_base = bs
+      unless config_base.nil?
+        bs = File.join(config_base, "db")
+        Pages.db_base = bs
+      end
       Pages.reload_cache
     end
 
