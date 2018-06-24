@@ -232,3 +232,45 @@ RSpec.describe StatusPage::Pageinfo do
   end
 
 end
+
+
+RSpec.describe StatusPage::App do
+  base = File.join("/", "tmp", "status-page2")
+
+  system("rm -rf #{base}")
+
+  app = nil
+  begin
+    app = StatusPage::App.new(base)
+  rescue
+  end
+
+  it "a new App was created" do
+    expect(app).not_to be nil
+  end
+
+  it "pulls from all pages" do
+    res = app.pull
+
+    expect(res).not_to be_empty
+  end
+
+  it "pulls and saves the data" do
+    res = app.pull_and_store
+
+    expect(res).not_to be_empty
+    expect(Pages.all).not_to be_empty
+
+    Pages.reload_cache
+    expect(Pages.all).not_to be_empty
+  end
+
+  it "prints history" do
+    expect { app.history }.to output.to_stdout
+  end
+
+  it "prints stats" do
+    expect { app.stats }.to output.to_stdout
+  end
+
+end
