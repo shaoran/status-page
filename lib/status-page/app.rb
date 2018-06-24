@@ -10,6 +10,10 @@ module StatusPage
       setup_config(config_base)
     end
 
+    def list_services
+      @pageinfo.list
+    end
+
     def pull
       results = @pageinfo.pageinfo.map do |id,config|
 
@@ -47,11 +51,11 @@ module StatusPage
       end
     end
 
-    def history
-      pages = Pages.all
+    def history(pages=nil)
+      pages = Pages.all if pages.nil?
 
       pages.sort! do |p1,p2|
-        ret = p1.service <=> p1.service
+        ret = p1.service.downcase <=> p2.service.downcase
         next ret if ret != 0
 
         next -1 * (p1.timestamp <=> p2.timestamp)
@@ -174,7 +178,7 @@ module StatusPage
 
       end #of services each
 
-      puts "#{"Servive".ljust(15)} #{"Up Since".ljust(30)} #{"Down time".ljust(30)}"
+      puts "#{"Service".ljust(15)} #{"Up Since".ljust(30)} #{"Down time".ljust(30)}"
 
 
       services.each do |service,ctn|
@@ -186,7 +190,6 @@ module StatusPage
 
         puts line.join(" ")
       end
-
 
     end
 
