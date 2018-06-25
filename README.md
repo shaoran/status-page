@@ -34,5 +34,47 @@ As stated in the PDF, I'm submitting the project plan before writing any code. M
 | **Writing a first version** | 4-5 hours | - |
 | **Testing, debugging, polishing code** | 1-2 hour | - |
 
+----
+
+## How to run it
+
+In order to test this project, I recommend to use [RVM][2]. After installing `rvm`:
+
+	$ rvm install ruby-2.5.1
+	$ rvm ruby-2.5.1
+	$ rvm gemset create status
+	$ rvm gemset use status
+	$ gem install bundler
+
+These commands install a new ruby version and create a new gemset called `status`.
+
+	$ cd status-page
+	$ ./bin/setup         # updates the gemset and runs bundle install
+	$ ./bin/status-page   # executes the program
+
+
+## Time table
+
+| Task   | Time expected | Time needed |
+|--------|---------------|-------------|
+| **Common research** | 2 hours | 4 hour |
+| **Writing a first version** | 4-5 hours | 10 hour |
+| **Testing, debugging, polishing code** | 1-2 hour | 2 hours |
+
+
+In generall I needed more time than I expected. I tend to underestimate the time all the time. Just from reading
+the PDF file, I already had a pretty good idea of how I would have solved this problem, the pieces were already
+in my head. And I start writing code and I realize afterwards that instead of 30 minutes I needed 2 hour in total.
+
+The *common research* took longer than I expected because even though I'm familiar with Rails, at my company we use
+rake tasks over rspec or cucumber, so I had to constantly look up the different rspec matchers (because of the different
+workflow I'm used to) and that takes more time than I anticipated.
+time that.
+
+I also tend to think to far ahead in the feature, I keep asking myself questions like
+*"what if I want to later be able to override the standard behaviour?"* and sometimes I start experimenting with new ideas,
+which obviously takes more time. This happended to my with my simple recreation of ActiveRecord (and the Query classes).
+
 
 [1]: https://www.statuspage.io
+[2]: https://rvm.io/
